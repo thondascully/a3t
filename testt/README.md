@@ -1,107 +1,11 @@
-# Polymarket Trading Bot - TEE Secure Trading Agent
-
-A secure, verifiable trading bot running on Eigencloud's Trusted Execution Environment (TEE) for Polymarket trading operations.
-
-## Architecture
-
-This trading bot is built with security and verifiability as core principles:
-
-- **Secure Wallet Management**: Private keys are securely managed within the TEE
-- **Risk Management**: Comprehensive risk controls and trade validation
-- **Web3 Integration**: Full Ethereum blockchain integration via Web3.py
-- **RESTful API**: Clean API interface for trading operations
-- **Comprehensive Logging**: Full audit trail of all operations
-
-## Components
-
-### Core Modules
-
-- **`app.py`**: Main Flask application with REST API endpoints
-- **`wallet_manager.py`**: Secure wallet operations and key management
-- **`web3_client.py`**: Blockchain interaction and transaction handling
-- **`trading_logic.py`**: Core trading engine orchestrating all operations
-- **`risk_manager.py`**: Risk assessment and trade validation
-
-### Key Features
-
-- **Multi-layer Risk Controls**: Daily/hourly limits, contract whitelisting, amount limits
-- **Gas Optimization**: Automatic gas estimation and price management
-- **Transaction Monitoring**: Real-time transaction status tracking
-- **Comprehensive Logging**: Full audit trail for compliance and debugging
-- **Health Monitoring**: Built-in health checks and status endpoints
-
-## API Endpoints
-
-### Health & Status
-- `GET /health` - Health check and system status
-- `GET /wallet/address` - Get trading bot wallet address
-- `GET /wallet/balance` - Get wallet ETH balance
-- `GET /config` - Get current trading configuration
-
-### Trading Operations
-- `POST /trade/execute` - Execute a trading transaction
-- `GET /trade/status/<tx_hash>` - Get transaction status
-- `POST /risk/assess` - Assess risk for a potential trade
-
-## Environment Configuration
-
-Copy `env.example` to `.env` and configure:
-
-```bash
-# Required: Wallet mnemonic (provided by Eigencloud)
-MNEMONIC=your twelve word mnemonic phrase here
-
-# Required: Ethereum RPC URL
-ETHEREUM_RPC_URL=https://eth.llamarpc.com
-
-# Risk Management
-MAX_TRADE_AMOUNT_ETH=1.0
-MAX_DAILY_VOLUME_ETH=10.0
-MAX_HOURLY_TRADES=20
-MAX_DAILY_TRADES=100
-
-# Allowed contracts (Polymarket addresses)
-ALLOWED_CONTRACTS=0x...
-```
-
-## Risk Management
-
-The bot implements comprehensive risk controls:
-
-- **Trade Amount Limits**: Maximum per-trade amounts
-- **Volume Limits**: Daily and hourly trading volume limits
-- **Trade Count Limits**: Maximum number of trades per period
-- **Contract Whitelisting**: Only approved contracts can receive funds
-- **Balance Checks**: Automatic balance validation before trades
-
-## Deployment on Eigencloud
-
-### Prerequisites
-1. Complete Eigencloud setup and authentication
-2. Configure environment variables
-3. Ensure mnemonic is securely provided by Eigencloud
-
-### Deploy
-```bash
-# Build and deploy to Eigencloud
-eigenx app deploy
-```
-
-### Monitor
-```bash
-# Check deployment status
-eigenx app status
-
-# View logs
-eigenx app logs
-```
+# testt
 
 ## Development
 
 ### Setup & Local Testing
 ```bash
 pip install -r requirements.txt
-cp env.example .env
+cp .env.example .env
 python src/main.py
 ```
 
@@ -150,41 +54,6 @@ eigenx app configure tls            # Configure TLS
 ### App Naming
 ```bash
 eigenx app name [app-id] [new-name]  # Update friendly name
-```
-
-## Security Features
-
-- **TEE Isolation**: All operations run within secure TEE environment
-- **Secure Key Management**: Private keys never leave the TEE
-- **Verifiable Operations**: All operations are cryptographically verifiable
-- **Audit Trail**: Complete logging of all trading activities
-- **Risk Controls**: Multi-layer risk management prevents unauthorized trades
-
-## Usage Examples
-
-### Execute a Trade
-```bash
-curl -X POST http://your-tee-url/trade/execute \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "0x...",
-    "value": "0.1"
-  }'
-```
-
-### Check Trade Status
-```bash
-curl http://your-tee-url/trade/status/0x...
-```
-
-### Assess Risk
-```bash
-curl -X POST http://your-tee-url/risk/assess \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "0x...",
-    "value": "0.1"
-  }'
 ```
 
 ## TLS Configuration (Optional)
@@ -270,21 +139,6 @@ To use custom certificates instead of Let's Encrypt, modify the `Caddyfile`:
 ```caddyfile
 tls /path/to/cert.pem /path/to/key.pem
 ```
-
-## Monitoring & Maintenance
-
-- Monitor `/health` endpoint for system status
-- Check `/config` for current risk settings
-- Review logs for trading activity and errors
-- Update `ALLOWED_CONTRACTS` as needed for new Polymarket contracts
-
-## Support
-
-For issues or questions:
-1. Check the logs: `eigenx app logs`
-2. Verify environment configuration
-3. Test with `/health` endpoint
-4. Review risk management settings
 
 ## Documentation
 
