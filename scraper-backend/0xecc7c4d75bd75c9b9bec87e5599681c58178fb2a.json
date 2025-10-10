@@ -1,0 +1,20 @@
+[
+  {
+    "proxyWallet": "0xecc7c4d75bd75c9b9bec87e5599681c58178fb2a",
+    "asset": "77509584664337590684321807020125984777549017408945508769243574094881196006322",
+    "conditionId": "0xe4fb9ae8c8ab51a73f23699fd0d54a8ef253c7232b8e54924392bc350ba77267",
+    "avgPrice": 0.45999999999999996,
+    "totalBought": 432910.58,
+    "realizedPnl": 233771.7132,
+    "curPrice": 1,
+    "title": "Tigers vs. Guardians",
+    "slug": "mlb-det-cle-2025-10-02",
+    "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/Repetitive-markets/MLB.jpg",
+    "eventSlug": "mlb-det-cle-2025-10-02",
+    "outcome": "Tigers",
+    "outcomeIndex": 0,
+    "oppositeOutcome": "Guardians",
+    "oppositeAsset": "7489934638231058218447964804053588860481830769249360164725627167462523759531",
+    "endDate": "2025-10-09T00:00:00Z"
+  }
+]

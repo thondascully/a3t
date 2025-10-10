@@ -1,0 +1,122 @@
+[
+  {
+    "rank": "1",
+    "proxyWallet": "0x1e1f17412069c0736adfaadf8ee7f46e5612c855",
+    "userName": "Brokie",
+    "vol": 57351.409013,
+    "pnl": 299730.89697308716,
+    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/Screenshot_2024_03_26_at_8_49_38_PM_614841_1711511402303.png"
+  },
+  {
+    "rank": "2",
+    "proxyWallet": "0x0a854897a06d4999e5b2dde5693609f1428ffe9d",
+    "userName": "Fusion1",
+    "vol": 213524.160999,
+    "pnl": 295823.7973470855,
+    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/profile-image-3064075-e0415b51-ea46-4ec7-8617-4eff311a0802.jpeg"
+  },
+  {
+    "rank": "3",
+    "proxyWallet": "0xbaa2bcb5439e985ce4ccf815b4700027d1b92c73",
+    "userName": "denizz",
+    "vol": 1338968.0495660002,
+    "pnl": 182587.70046010741,
+    "profileImage": ""
+  },
+  {
+    "rank": "4",
+    "proxyWallet": "0x8ff6b963f9b1df3a3a5504e306302e1753e572ae",
+    "userName": "satoshiAncap",
+    "vol": 2255002.4119530004,
+    "pnl": 88166.53520229014,
+    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/profile-image-2435834-00cbf393-f667-4a10-a70e-dbe5ea4e7053.jpeg"
+  },
+  {
+    "rank": "5",
+    "proxyWallet": "0x551e72eda42a5ab39d6d78239a1d9bbb5db6b0e0",
+    "userName": "GayPride",
+    "vol": 764311.278158,
+    "pnl": 74179.0945357628,
+    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/pride_9db2fae8-e17a-41b7-a0f2-c2490c3da1cb_1741135021807.png"
+  },
+  {
+    "rank": "6",
+    "proxyWallet": "0x53e55bc7cb3d67ad177c023ce891ad076a9d6177",
+    "userName": "Arbguy",
+    "vol": 463323.52894899994,
+    "pnl": 70517.80369969356,
+    "profileImage": ""
+  },
+  {
+    "rank": "7",
+    "proxyWallet": "0x9d84ce0306f8551e02efef1680475fc0f1dc1344",
+    "userName": "🤺JustWakingUp",
+    "vol": 2199312.9405550007,
+    "pnl": 68017.63282202766,
+    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/profile-image-82662-f2f4a9f1-d024-4ee3-8bf1-38a0ce169679.png"
+  },
+  {
+    "rank": "8",
+    "proxyWallet": "0xd281aea9ba78ee53cce53f5b6330446ddd7baf47",
+    "userName": "Solapump",
+    "vol": 792718.6030470002,
+    "pnl": 52966.472411655035,
+    "profileImage": ""
+  },
+  {
+    "rank": "9",
+    "proxyWallet": "0x52a17584eab3c45ad73c15d271b600a3cb9a7833",
+    "userName": "0x52a17584eab3c45ad73C15D271B600A3CB9a7833-1759598300885",
+    "vol": 144686.0452,
+    "pnl": 51819.533738,
+    "profileImage": ""
+  },
+  {
+    "rank": "10",
+    "proxyWallet": "0xbacd00c9080a82ded56f504ee8810af732b0ab35",
+    "userName": "Gonef",
+    "vol": 1697942.2180980002,
+    "pnl": 51529.09125503834,
+    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/profile-image-2861114-793f4b4d-8c79-403d-acf0-71217c5cb900.png"
+  },
+  {
+    "rank": "11",
+    "proxyWallet": "0xd426adbc3c4461c86099c26221c877f20e42334a",
+    "userName": "881112",
+    "vol": 456606.905041,
+    "pnl": 49825.62947039199,
+    "profileImage": ""
+  },
+  {
+    "rank": "12",
+    "proxyWallet": "0xb74711992caf6d04fa55eecc46b8efc95311b050",
+    "userName": "Kapii",
+    "vol": 150920.79792700004,
+    "pnl": 48729.36767931108,
+    "profileImage": ""
+  },
+  {
+    "rank": "13",
+    "proxyWallet": "0xa430506774f9efaf39903ee7e0db1351f66891ca",
+    "userName": "6741",
+    "vol": 319759.401049,
+    "pnl": 47153.04565393647,
+    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/profile-image-3482399-1358370c-c9d1-429e-b395-df1c562b7b3d.png"
+  },
+  {
+    "rank": "14",
+    "proxyWallet": "0xf811ef0712a03925ce67ae2af5318cfeb86b1792",
+    "userName": "krikcrok",
+    "vol": 0,
+    "pnl": 44601.95466238147,
+    "profileImage": ""
+  },
+  {
+    "rank": "15",
+    "proxyWallet": "0xc6587b11a2209e46dfe3928b31c5514a8e33b784",
+    "userName": "Erasmus",
+    "vol": 1103921.977848,
+    "pnl": 41879.687675534515,
+    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/profile-image-642445-57bdf037-ed16-49d7-aa24-c54d1e7345a0.jpg"
+  }
+]

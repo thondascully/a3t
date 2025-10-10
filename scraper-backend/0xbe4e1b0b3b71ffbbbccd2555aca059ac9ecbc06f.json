@@ -1,0 +1,20 @@
+[
+  {
+    "proxyWallet": "0xbe4e1b0b3b71ffbbbccd2555aca059ac9ecbc06f",
+    "asset": "101856953480309894461120799277322878660767173111339579431199041239556877783936",
+    "conditionId": "0x5115235ae1bde8258744d965a1d29a5d9d1bd70e9ab41b3ea1d12f8810907459",
+    "avgPrice": 0.1713428924215984,
+    "totalBought": 86194.399349,
+    "realizedPnl": 71426.454325,
+    "curPrice": 1,
+    "title": "Will Bitcoin reach $124,000 September 29-October 5?",
+    "slug": "will-bitcoin-reach-124k-september-29-october-5",
+    "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/BTC+fullsize.png",
+    "eventSlug": "what-price-will-bitcoin-hit-september-29-october-5",
+    "outcome": "Yes",
+    "outcomeIndex": 0,
+    "oppositeOutcome": "No",
+    "oppositeAsset": "266080167836011761887656710878727605404267664714952814821428058651122631099",
+    "endDate": "2025-10-06T00:00:00Z"
+  }
+]

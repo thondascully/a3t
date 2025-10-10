@@ -1,0 +1,20 @@
+[
+  {
+    "proxyWallet": "0xf811ef0712a03925ce67ae2af5318cfeb86b1792",
+    "asset": "75623456110044452735862667986300151561875472351435657890143571748211575605551",
+    "conditionId": "0xc04868a1059a66d1f1f2fde73faa762edf56f5630a9653bd116f0603a0e71b99",
+    "avgPrice": 0.6800000003250057,
+    "totalBought": 1599.972186,
+    "realizedPnl": 511.991099,
+    "curPrice": 1,
+    "title": "Will Trump say \"Inflation\" during his AI speech on July 23?",
+    "slug": "will-trump-say-inflation-during-his-ai-speech-on-july-23",
+    "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/what-will-trump-say-during-his-ai-speech-on-july-23-xWtfoIn4CXi8.jpg",
+    "eventSlug": "what-will-trump-say-during-his-ai-speech-on-july-23",
+    "outcome": "No",
+    "outcomeIndex": 1,
+    "oppositeOutcome": "Yes",
+    "oppositeAsset": "67228719578832684558077835222698458161280526461638420850659635360071554698187",
+    "endDate": "2025-07-23T00:00:00Z"
+  }
+]

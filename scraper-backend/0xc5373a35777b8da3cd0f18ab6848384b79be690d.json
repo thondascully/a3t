@@ -1,0 +1,20 @@
+[
+  {
+    "proxyWallet": "0xc5373a35777b8da3cd0f18ab6848384b79be690d",
+    "asset": "28666150433084265051754931590965540192791772291597008690205833154965092964298",
+    "conditionId": "0x1d414e71a6252d4a25b5907750a8b3ce227fd7e22db4f2c991c9b74d734deee0",
+    "avgPrice": 0.5178061297202537,
+    "totalBought": 602306.145299,
+    "realizedPnl": 289940.537175,
+    "curPrice": 1,
+    "title": "Padres vs. Cubs",
+    "slug": "mlb-sd-chc-2025-10-02",
+    "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/Repetitive-markets/MLB.jpg",
+    "eventSlug": "mlb-sd-chc-2025-10-02",
+    "outcome": "Cubs",
+    "outcomeIndex": 1,
+    "oppositeOutcome": "Padres",
+    "oppositeAsset": "100056866356611133353257468961003162950863554917942814447055117171825443771337",
+    "endDate": "2025-10-09T00:00:00Z"
+  }
+]
