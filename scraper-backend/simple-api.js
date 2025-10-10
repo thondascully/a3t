@@ -3,6 +3,7 @@ import fs from 'fs';
 import { 
     fetchClosedPositionsForWallet,
     backtestPortfolioOnCategory,
+    fetchPolymarketLeaderboard,
     SLUG_CATEGORY_LOOKUP,
     VALID_CATEGORIES 
 } from './main.js';
@@ -140,6 +141,92 @@ app.post('/api/backtest', async (req, res) => {
 });
 
 /**
+ * Leaderboard endpoint
+ * GET /api/leaderboard?category=politics&timePeriod=week&limit=20
+ */
+app.get('/api/leaderboard', async (req, res) => {
+    try {
+        const { 
+            category = 'overall', 
+            timePeriod = 'all', 
+            limit = 15,
+            orderBy = 'PNL'
+        } = req.query;
+
+        // Validation
+        if (!VALID_CATEGORIES.has(category.toLowerCase())) {
+            return res.status(400).json({ 
+                error: `Invalid category: ${category}. Valid categories are: ${Array.from(VALID_CATEGORIES).join(', ')}` 
+            });
+        }
+
+        const validTimePeriods = ['day', 'week', 'month', 'all'];
+        if (!validTimePeriods.includes(timePeriod)) {
+            return res.status(400).json({ 
+                error: `Invalid timePeriod: ${timePeriod}. Valid time periods are: ${validTimePeriods.join(', ')}` 
+            });
+        }
+
+        const validOrderBy = ['PNL', 'VOL'];
+        if (!validOrderBy.includes(orderBy)) {
+            return res.status(400).json({ 
+                error: `Invalid orderBy: ${orderBy}. Valid orderBy values are: ${validOrderBy.join(', ')}` 
+            });
+        }
+
+        const limitNum = parseInt(limit);
+        if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+            return res.status(400).json({ 
+                error: 'limit must be a number between 1 and 100' 
+            });
+        }
+
+        console.log(`Fetching leaderboard: category=${category}, timePeriod=${timePeriod}, limit=${limitNum}`);
+
+        // Try to load from file first
+        const fileName = `leaderboard_${category}_${timePeriod}.json`;
+        let leaderboard;
+
+        if (fs.existsSync(fileName)) {
+            console.log(`Loading leaderboard from file: ${fileName}`);
+            const fileContent = fs.readFileSync(fileName, 'utf8');
+            leaderboard = JSON.parse(fileContent);
+        } else {
+            console.log(`File ${fileName} not found, fetching from API`);
+            leaderboard = await fetchPolymarketLeaderboard({
+                category: category.toLowerCase(),
+                timePeriod,
+                limit: limitNum,
+                orderBy
+            });
+        }
+
+        // Limit results if file has more than requested
+        const limitedResults = leaderboard.slice(0, limitNum);
+
+        res.json({
+            success: true,
+            data: limitedResults,
+            meta: {
+                category,
+                timePeriod,
+                limit: limitNum,
+                orderBy,
+                totalResults: limitedResults.length,
+                source: fs.existsSync(fileName) ? 'file' : 'api'
+            }
+        });
+
+    } catch (error) {
+        console.error('Leaderboard error:', error);
+        res.status(500).json({ 
+            error: 'Internal server error while fetching leaderboard',
+            message: error.message 
+        });
+    }
+});
+
+/**
  * Health check endpoint
  * GET /api/health
  */
@@ -161,6 +248,21 @@ app.get('/api/categories', (req, res) => {
         data: Array.from(VALID_CATEGORIES),
         meta: {
             total: VALID_CATEGORIES.size
+        }
+    });
+});
+
+/**
+ * Get available time periods
+ * GET /api/time-periods
+ */
+app.get('/api/time-periods', (req, res) => {
+    const timePeriods = ['day', 'week', 'month', 'all'];
+    res.json({
+        success: true,
+        data: timePeriods,
+        meta: {
+            total: timePeriods.length
         }
     });
 });
@@ -188,8 +290,11 @@ app.listen(PORT, () => {
     console.log(`📊 Available endpoints:`);
     console.log(`   GET  /api/health - Health check`);
     console.log(`   GET  /api/categories - Get available categories`);
+    console.log(`   GET  /api/time-periods - Get available time periods`);
+    console.log(`   GET  /api/leaderboard - Get leaderboard data`);
     console.log(`   POST /api/backtest - Run portfolio backtest`);
-    console.log(`\n🔗 Example request:`);
+    console.log(`\n🔗 Example requests:`);
+    console.log(`   curl "http://localhost:${PORT}/api/leaderboard?category=politics&timePeriod=week&limit=10"`);
     console.log(`   curl -X POST "http://localhost:${PORT}/api/backtest" \\`);
     console.log(`     -H "Content-Type: application/json" \\`);
     console.log(`     -d '{"addresses":["0x123..."],"category":"crypto","startBalance":1000}'`);
