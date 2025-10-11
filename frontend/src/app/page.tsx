@@ -457,7 +457,7 @@ export default function LeaderboardPage() {
         <main className="w-full max-w-7xl mx-auto space-y-8">
           <div className="text-center mb-10">
             <h1 className="text-4xl font-bold flex items-center justify-center gap-3 text-black">
-              Whale Tracker!
+              Free Passive Money!
             </h1>
             <p className="text-gray-600 mt-2"></p>
           </div>

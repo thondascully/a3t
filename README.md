@@ -51,31 +51,6 @@ A3T is an automated Polymarket copy-trading agent that makes passive income by f
 - Docker (for TEE deployment)
 - ETH for deployment transactions
 
-### Development Setup
-
-1. **Clone and Setup**
-   ```bash
-   git clone <repository>
-   cd a3t
-   cp env.example .env
-   # Edit .env with your configuration
-   ```
-
-2. **Start Development Environment**
-   ```bash
-   ./start-dev.sh
-   ```
-
-3. **Access Services**
-   - Frontend: http://localhost:3000
-   - Scraper API: http://localhost:3000/api
-   - Trading Engine: http://localhost:3001
-
-4. **Stop Services**
-   ```bash
-   ./stop-dev.sh
-   ```
-
 ### Complete Application Startup
 
 To run the entire application with all services (recommended for full demo):
@@ -103,6 +78,31 @@ To run the entire application with all services (recommended for full demo):
    ```
 
 > **Note**: The complete startup script (`run-local-complete.sh`) is the recommended way to run the full demo, as it starts all three services with proper dependency management.
+
+### Development Setup
+
+1. **Clone and Setup**
+   ```bash
+   git clone <repository>
+   cd a3t
+   cp env.example .env
+   # Edit .env with your configuration
+   ```
+
+2. **Start Development Environment**
+   ```bash
+   ./start-dev.sh
+   ```
+
+3. **Access Services**
+   - Frontend: http://localhost:3000
+   - Scraper API: http://localhost:3000/api
+   - Trading Engine: http://localhost:3001
+
+4. **Stop Services**
+   ```bash
+   ./stop-dev.sh
+   ```
 
 ## 📁 Project Structure
 
