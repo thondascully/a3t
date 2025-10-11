@@ -344,6 +344,298 @@ def place_polymarket_bet():
             'status': 'error'
         }), 500
 
+# Bot Control Endpoints
+
+@app.route('/bot/start', methods=['POST'])
+def start_bot():
+    """Start the trading bot"""
+    try:
+        if not trading_engine:
+            return jsonify({
+                'error': 'Trading engine not available',
+                'status': 'error'
+            }), 503
+        
+        # Start whale monitoring if not already running
+        if trading_engine.whale_monitor:
+            result = trading_engine.start_whale_monitoring()
+        else:
+            result = {
+                'success': True,
+                'message': 'Trading bot started',
+                'bot_status': 'active'
+            }
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error starting bot: {e}")
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
+@app.route('/bot/stop', methods=['POST'])
+def stop_bot():
+    """Stop the trading bot"""
+    try:
+        if not trading_engine:
+            return jsonify({
+                'error': 'Trading engine not available',
+                'status': 'error'
+            }), 503
+        
+        # Stop whale monitoring if running
+        if trading_engine.whale_monitor:
+            result = trading_engine.stop_whale_monitoring()
+        else:
+            result = {
+                'success': True,
+                'message': 'Trading bot stopped',
+                'bot_status': 'inactive'
+            }
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error stopping bot: {e}")
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
+@app.route('/bot/status', methods=['GET'])
+def get_bot_status():
+    """Get the current bot status"""
+    try:
+        if not trading_engine:
+            return jsonify({
+                'status': 'inactive',
+                'message': 'Trading engine not available'
+            }), 503
+        
+        # Get whale monitoring status
+        if trading_engine.whale_monitor:
+            whale_status = trading_engine.get_whale_monitoring_status()
+            bot_status = 'active' if whale_status.get('monitoring_active', False) else 'inactive'
+        else:
+            bot_status = 'active'  # If no whale monitor, bot is considered active
+        
+        return jsonify({
+            'status': bot_status,
+            'trading_engine_ready': trading_engine is not None,
+            'web3_connected': web3_client.is_connected() if web3_client else False,
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting bot status: {e}")
+        return jsonify({
+            'status': 'inactive',
+            'error': str(e)
+        }), 500
+
+# Wallet Management Endpoints
+
+@app.route('/wallet/withdraw', methods=['POST'])
+def withdraw_funds():
+    """Withdraw all funds to the user's linked address"""
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        if not web3_client:
+            return jsonify({
+                'error': 'Web3 client not available',
+                'status': 'error'
+            }), 503
+        
+        withdraw_data = request.get_json()
+        
+        # Get the withdrawal address (could be from request or use a default)
+        to_address = withdraw_data.get('to_address')
+        if not to_address:
+            return jsonify({'error': 'Missing required field: to_address'}), 400
+        
+        # Get current balance
+        balance = web3_client.get_balance()
+        if balance == 0:
+            return jsonify({
+                'success': False,
+                'message': 'No funds to withdraw',
+                'balance_eth': 0
+            })
+        
+        # Calculate withdrawal amount (all available funds minus gas)
+        gas_estimate = 21000  # Basic ETH transfer gas
+        gas_price = web3_client.w3.eth.gas_price
+        gas_cost = gas_estimate * gas_price
+        
+        if balance <= gas_cost:
+            return jsonify({
+                'success': False,
+                'message': 'Insufficient funds to cover gas costs',
+                'balance_eth': web3_client.wei_to_eth(balance),
+                'gas_cost_eth': web3_client.wei_to_eth(gas_cost)
+            })
+        
+        # Calculate amount to withdraw (balance minus gas costs)
+        withdraw_amount = balance - gas_cost
+        
+        # Execute withdrawal transaction
+        tx_hash = web3_client.send_transaction(to_address, web3_client.wei_to_eth(withdraw_amount))
+        
+        return jsonify({
+            'success': True,
+            'tx_hash': tx_hash,
+            'amount_eth': web3_client.wei_to_eth(withdraw_amount),
+            'gas_cost_eth': web3_client.wei_to_eth(gas_cost),
+            'message': 'Withdrawal transaction submitted'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error withdrawing funds: {e}")
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
+# Whale Management Endpoints
+
+@app.route('/whales/add', methods=['POST'])
+def add_whale():
+    """Add a whale to monitor for copy trading"""
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        if not trading_engine:
+            return jsonify({
+                'error': 'Trading engine not available',
+                'status': 'error'
+            }), 503
+        
+        whale_data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['address', 'name', 'category']
+        for field in required_fields:
+            if field not in whale_data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # Extract whale parameters
+        address = whale_data['address']
+        name = whale_data['name']
+        category = whale_data['category']
+        position_percentage = whale_data.get('position_percentage', 0.02)
+        
+        # Add whale to monitor
+        result = trading_engine.add_whale_to_monitor(address, name, category, position_percentage)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error adding whale: {e}")
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
+@app.route('/whales/remove', methods=['POST'])
+def remove_whale():
+    """Remove a whale from monitoring"""
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        if not trading_engine:
+            return jsonify({
+                'error': 'Trading engine not available',
+                'status': 'error'
+            }), 503
+        
+        whale_data = request.get_json()
+        
+        if 'address' not in whale_data:
+            return jsonify({'error': 'Missing required field: address'}), 400
+        
+        address = whale_data['address']
+        
+        # Remove whale from monitor
+        result = trading_engine.remove_whale_from_monitor(address)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error removing whale: {e}")
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
+@app.route('/whales/start-monitoring', methods=['POST'])
+def start_whale_monitoring():
+    """Start whale monitoring for copy trading"""
+    try:
+        if not trading_engine:
+            return jsonify({
+                'error': 'Trading engine not available',
+                'status': 'error'
+            }), 503
+        
+        result = trading_engine.start_whale_monitoring()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error starting whale monitoring: {e}")
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
+@app.route('/whales/stop-monitoring', methods=['POST'])
+def stop_whale_monitoring():
+    """Stop whale monitoring"""
+    try:
+        if not trading_engine:
+            return jsonify({
+                'error': 'Trading engine not available',
+                'status': 'error'
+            }), 503
+        
+        result = trading_engine.stop_whale_monitoring()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error stopping whale monitoring: {e}")
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
+@app.route('/whales/status', methods=['GET'])
+def get_whale_monitoring_status():
+    """Get whale monitoring status"""
+    try:
+        if not trading_engine:
+            return jsonify({
+                'error': 'Trading engine not available',
+                'status': 'error'
+            }), 503
+        
+        result = trading_engine.get_whale_monitoring_status()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error getting whale monitoring status: {e}")
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Endpoint not found'}), 404
@@ -355,22 +647,15 @@ def internal_error(error):
 def main():
     """Main application entry point"""
     try:
-        # # Initialize services
+        # Initialize services
         initialize_services()
+        
         # Get port from environment or use default
-        # port = int(os.environ.get('PORT', 8080))
+        port = int(os.environ.get('PORT', 8080))
         
         # Start the Flask app
-        # logger.info(f"Starting Polymarket Trading Bot on port {port}")
-        # app.run(host='0.0.0.0', port=port, debug=False)
-
-        # walletManager = WalletManager()
-        # web3Client = Web3Client(walletManager)
-        # account = walletManager.get_address()
-        # print(f"Wallet Address: {account}")
-        # balance = web3Client.get_balance(account)
-        # print(f"Wallet Balance: {balance}")
-        
+        logger.info(f"Starting Polymarket Trading Bot on port {port}")
+        app.run(host='0.0.0.0', port=port, debug=False)
 
     except Exception as e:
         logger.error(f"Failed to start application: {e}")

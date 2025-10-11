@@ -1,24 +1,18 @@
 {
-  "name": "polymarket-scraper-api",
+  "name": "scraper-backend",
   "version": "1.0.0",
-  "description": "Polymarket data scraper and API server",
   "type": "module",
-  "main": "api.js",
+  "description": "Simple Polymarket API scraper backend",
+  "main": "simple-api.js",
   "scripts": {
     "start": "node simple-api.js",
-    "dev": "node --watch simple-api.js",
-    "test": "node main.js"
+    "dev": "node simple-api.js"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
   },
-  "keywords": [
-    "polymarket",
-    "prediction-markets",
-    "api",
-    "scraper",
-    "backtest"
-  ],
+  "keywords": ["polymarket", "api", "scraper"],
   "author": "",
   "license": "MIT"
 }

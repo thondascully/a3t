@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 from eth_utils import to_checksum_address
 from polymarket_client import PolymarketClient
+from whale_monitor import WhaleMonitor, WhaleConfig
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,14 @@ class TradingEngine:
         except Exception as e:
             logger.warning(f"Failed to initialize Polymarket client: {e}")
             self.polymarket_client = None
+        
+        # Initialize whale monitor
+        try:
+            self.whale_monitor = WhaleMonitor(self, web3_client)
+            logger.info("Whale monitor initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize whale monitor: {e}")
+            self.whale_monitor = None
         
         logger.info("Trading engine initialized")
     
@@ -313,3 +322,121 @@ class TradingEngine:
         except Exception as e:
             logger.error(f"Failed to get market info: {e}")
             raise
+    
+    # Whale Management Methods
+    
+    def add_whale_to_monitor(self, address: str, name: str, category: str, position_percentage: float = 0.02):
+        """Add a whale to monitor for copy trading"""
+        try:
+            if not self.whale_monitor:
+                raise ValueError("Whale monitor not available")
+            
+            whale_config = WhaleConfig(
+                address=address,
+                name=name,
+                category=category,
+                position_percentage=position_percentage
+            )
+            
+            self.whale_monitor.add_whale(whale_config)
+            logger.info(f"Added whale to monitor: {name} ({address})")
+            
+            return {
+                'success': True,
+                'message': f'Added {name} to whale monitoring',
+                'whale': {
+                    'address': address,
+                    'name': name,
+                    'category': category,
+                    'position_percentage': position_percentage
+                }
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to add whale to monitor: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def remove_whale_from_monitor(self, address: str):
+        """Remove a whale from monitoring"""
+        try:
+            if not self.whale_monitor:
+                raise ValueError("Whale monitor not available")
+            
+            self.whale_monitor.remove_whale(address)
+            
+            return {
+                'success': True,
+                'message': f'Removed whale {address} from monitoring'
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to remove whale from monitor: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def start_whale_monitoring(self):
+        """Start whale monitoring for copy trading"""
+        try:
+            if not self.whale_monitor:
+                raise ValueError("Whale monitor not available")
+            
+            self.whale_monitor.start_monitoring()
+            
+            return {
+                'success': True,
+                'message': 'Whale monitoring started'
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to start whale monitoring: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def stop_whale_monitoring(self):
+        """Stop whale monitoring"""
+        try:
+            if not self.whale_monitor:
+                raise ValueError("Whale monitor not available")
+            
+            self.whale_monitor.stop_monitoring()
+            
+            return {
+                'success': True,
+                'message': 'Whale monitoring stopped'
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to stop whale monitoring: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def get_whale_monitoring_status(self) -> Dict[str, Any]:
+        """Get whale monitoring status"""
+        try:
+            if not self.whale_monitor:
+                return {
+                    'success': False,
+                    'error': 'Whale monitor not available'
+                }
+            
+            status = self.whale_monitor.get_monitoring_status()
+            return {
+                'success': True,
+                'status': status
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to get whale monitoring status: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }

@@ -1,9 +1,12 @@
 import express from 'express';
 import fs from 'fs';
+import fetch from 'node-fetch';
 import { 
     fetchClosedPositionsForWallet,
     backtestPortfolioOnCategory,
     fetchPolymarketLeaderboard,
+    fetchWhalePositions,
+    executeWhaleTrades,
     SLUG_CATEGORY_LOOKUP,
     VALID_CATEGORIES 
 } from './main.js';
@@ -141,6 +144,69 @@ app.post('/api/backtest', async (req, res) => {
 });
 
 /**
+ * Category-based backtest endpoint
+ * POST /api/category-backtest
+ * Body: {
+ *   addresses: string[],
+ *   category: string
+ * }
+ */
+app.post('/api/category-backtest', async (req, res) => {
+    try {
+        const { addresses, category } = req.body;
+
+        // Validation
+        if (!Array.isArray(addresses) || addresses.length === 0) {
+            return res.status(400).json({ 
+                error: 'addresses must be a non-empty array of wallet addresses' 
+            });
+        }
+
+        if (!category || typeof category !== 'string') {
+            return res.status(400).json({ 
+                error: 'category must be a non-empty string' 
+            });
+        }
+
+        // Validate category
+        if (!VALID_CATEGORIES.has(category.toLowerCase())) {
+            return res.status(400).json({ 
+                error: `Invalid category: ${category}. Valid categories are: ${Array.from(VALID_CATEGORIES).join(', ')}` 
+            });
+        }
+
+        console.log(`Running category backtest for ${addresses.length} addresses, category: ${category}`);
+
+        // Use default parameters for category backtest
+        const startBalance = 1000;
+        const positionPercentage = 0.02;
+
+        // Run the backtest using the existing function
+        const backtestResults = await backtestPortfolioOnCategory(
+            startBalance,
+            positionPercentage,
+            addresses,
+            [category.toLowerCase()],
+            SLUG_CATEGORY_LOOKUP
+        );
+
+        // Format the results
+        const formattedResults = formatBacktestResults(backtestResults, category.toLowerCase(), startBalance);
+
+        res.json({
+            data: formattedResults
+        });
+
+    } catch (error) {
+        console.error('Category backtest API error:', error);
+        res.status(500).json({ 
+            error: 'Internal server error',
+            message: error.message 
+        });
+    }
+});
+
+/**
  * Leaderboard endpoint
  * GET /api/leaderboard?category=politics&timePeriod=week&limit=20
  */
@@ -267,6 +333,114 @@ app.get('/api/time-periods', (req, res) => {
     });
 });
 
+/**
+ * Fetch whale positions from Polymarket API
+ * GET /api/whale-positions?address=0x123...&category=politics
+ */
+app.get('/api/whale-positions', async (req, res) => {
+    try {
+        const { address, category } = req.query;
+
+        // Validation
+        if (!address) {
+            return res.status(400).json({ 
+                error: 'address parameter is required' 
+            });
+        }
+
+        if (category && !VALID_CATEGORIES.has(category.toLowerCase())) {
+            return res.status(400).json({ 
+                error: `Invalid category: ${category}. Valid categories are: ${Array.from(VALID_CATEGORIES).join(', ')}` 
+            });
+        }
+
+        console.log(`Fetching positions for whale: ${address}`);
+
+        // Fetch positions from Polymarket API
+        const positions = await fetchWhalePositions(address, category);
+
+        res.json({
+            success: true,
+            data: positions,
+            meta: {
+                whale_address: address,
+                category: category || 'all',
+                total_positions: positions.length
+            }
+        });
+
+    } catch (error) {
+        console.error('Whale positions error:', error);
+        res.status(500).json({ 
+            error: 'Internal server error while fetching whale positions',
+            message: error.message 
+        });
+    }
+});
+
+/**
+ * Execute trades based on whale positions
+ * POST /api/execute-whale-trades
+ * Body: {
+ *   addresses: string[],
+ *   category: string,
+ *   positionPercentage?: number (optional, defaults to 0.02)
+ * }
+ */
+app.post('/api/execute-whale-trades', async (req, res) => {
+    try {
+        const { addresses, category, positionPercentage = 0.02 } = req.body;
+
+        // Validation
+        if (!Array.isArray(addresses) || addresses.length === 0) {
+            return res.status(400).json({ 
+                error: 'addresses must be a non-empty array of whale addresses' 
+            });
+        }
+
+        if (!category || typeof category !== 'string') {
+            return res.status(400).json({ 
+                error: 'category must be a non-empty string' 
+            });
+        }
+
+        if (!VALID_CATEGORIES.has(category.toLowerCase())) {
+            return res.status(400).json({ 
+                error: `Invalid category: ${category}. Valid categories are: ${Array.from(VALID_CATEGORIES).join(', ')}` 
+            });
+        }
+
+        if (typeof positionPercentage !== 'number' || positionPercentage <= 0 || positionPercentage > 1) {
+            return res.status(400).json({ 
+                error: 'positionPercentage must be a number between 0 and 1' 
+            });
+        }
+
+        console.log(`Executing whale trades for ${addresses.length} addresses, category: ${category}`);
+
+        // Execute trades based on whale positions
+        const results = await executeWhaleTrades(addresses, category, positionPercentage);
+
+        res.json({
+            success: true,
+            data: results,
+            meta: {
+                category,
+                positionPercentage,
+                total_whales: addresses.length,
+                total_trades: results.reduce((sum, result) => sum + result.trades.length, 0)
+            }
+        });
+
+    } catch (error) {
+        console.error('Execute whale trades error:', error);
+        res.status(500).json({ 
+            error: 'Internal server error while executing whale trades',
+            message: error.message 
+        });
+    }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
@@ -293,11 +467,18 @@ app.listen(PORT, () => {
     console.log(`   GET  /api/time-periods - Get available time periods`);
     console.log(`   GET  /api/leaderboard - Get leaderboard data`);
     console.log(`   POST /api/backtest - Run portfolio backtest`);
+    console.log(`   POST /api/category-backtest - Run category-based backtest`);
+    console.log(`   GET  /api/whale-positions - Fetch whale positions`);
+    console.log(`   POST /api/execute-whale-trades - Execute trades based on whale positions`);
     console.log(`\n🔗 Example requests:`);
     console.log(`   curl "http://localhost:${PORT}/api/leaderboard?category=politics&timePeriod=week&limit=10"`);
     console.log(`   curl -X POST "http://localhost:${PORT}/api/backtest" \\`);
     console.log(`     -H "Content-Type: application/json" \\`);
     console.log(`     -d '{"addresses":["0x123..."],"category":"crypto","startBalance":1000}'`);
+    console.log(`   curl "http://localhost:${PORT}/api/whale-positions?address=0x123...&category=politics"`);
+    console.log(`   curl -X POST "http://localhost:${PORT}/api/execute-whale-trades" \\`);
+    console.log(`     -H "Content-Type: application/json" \\`);
+    console.log(`     -d '{"addresses":["0x123..."],"category":"politics","positionPercentage":0.02}'`);
 });
 
 export default app;
