@@ -5,6 +5,10 @@ https://youtu.be/khWixEAOrXU
 
 > **Solution**: Our platform uses an Eigencompute TEE as a secure vault to protect the user's private key while automatically executing copy-trades based on real-time whale alerts.
 
+## 📝 Demo Data Note
+
+This demo includes hardcoded example data in the activity logs and trading history to showcase what the system would display when market resolutions occur. Since no markets resolved during our development period, we populated the interface with realistic sample data to demonstrate the full user experience including trade executions, market resolutions, and profit/loss tracking.
+
 ## 🎯 Project Overview
 
 A3T is an automated Polymarket copy-trading agent that makes passive income by following whale alerts, with the critical difference that the user's private key is always secured inside an unstoppable Eigencompute TEE.
@@ -72,6 +76,34 @@ A3T is an automated Polymarket copy-trading agent that makes passive income by f
    ./stop-dev.sh
    ```
 
+### Complete Application Startup
+
+To run the entire application with all services (recommended for full demo):
+
+1. **One-Command Startup**
+   ```bash
+   ./run-local-complete.sh
+   ```
+   
+   This script will automatically:
+   - Start the Python trading backend (port 8080)
+   - Start the Node.js scraper API (port 3000) 
+   - Start the Next.js frontend (port 3001)
+   - Install dependencies if needed
+   - Display service URLs and status
+
+2. **Access the Application**
+   - Frontend UI: http://localhost:3001
+   - Trading API: http://localhost:8080
+   - Scraper API: http://localhost:3000
+
+3. **Stop All Services**
+   ```bash
+   ./stop-local.sh
+   ```
+
+> **Note**: The complete startup script (`run-local-complete.sh`) is the recommended way to run the full demo, as it starts all three services with proper dependency management.
+
 ## 📁 Project Structure
 
 ```
@@ -101,6 +133,8 @@ a3t/
 ├── api/                    # Trade execution endpoints
 ├── start-dev.sh           # Development startup script
 ├── stop-dev.sh            # Development cleanup script
+├── run-local-complete.sh  # Complete application startup script
+├── stop-local.sh          # Complete application cleanup script
 └── env.example            # Environment configuration template
 ```
 
@@ -270,16 +304,19 @@ npm test
 ### Integration Testing
 
 ```bash
-# Test complete flow
+# Test complete flow (recommended)
+./run-local-complete.sh
+
+# Or use development script
 ./start-dev.sh
 
 # Add a test whale
-curl -X POST http://localhost:3001/whales/add \
+curl -X POST http://localhost:8080/whales/add \
   -H "Content-Type: application/json" \
   -d '{"address": "0x123...", "name": "TestWhale", "category": "crypto"}'
 
 # Start monitoring
-curl -X POST http://localhost:3001/whales/start-monitoring
+curl -X POST http://localhost:8080/whales/start-monitoring
 ```
 
 ## 📈 Performance & Monitoring
